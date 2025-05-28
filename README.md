@@ -1,0 +1,2 @@
+- para correrlo ejecuta "python manahe.py runserver"
+- en la carpeta "cementerio" ve al archivo "settings.py" y cambia "DEBUG = True"
