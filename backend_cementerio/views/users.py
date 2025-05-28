@@ -78,7 +78,7 @@ class UserView(viewsets.ModelViewSet):
             user.username = username
 
         if password:
-            user.set_password(password)  # MUY IMPORTANTE usar set_password
+            user.set_password(password) 
 
         if is_admin is not None:
             user.is_admin = is_admin in [True, "true", "True", "1", 1]
