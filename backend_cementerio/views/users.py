@@ -12,8 +12,8 @@ from rest_framework import viewsets, status
 from django.http import HttpResponse
 from rest_framework.authentication import TokenAuthentication
 
-@permission_classes([IsAuthenticated])
-@authentication_classes([TokenAuthentication])
+#@permission_classes([IsAuthenticated])
+#@authentication_classes([TokenAuthentication])
 class UserView(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
