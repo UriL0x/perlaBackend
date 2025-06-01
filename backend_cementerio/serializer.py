@@ -7,9 +7,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class RowSerializer(serializers.ModelSerializer):    
+    has_busy_grave = serializers.SerializerMethodField()
+
     class Meta:
         model = Row
-        fields = ['id', 'num']
+        fields = ['id', 'num', 'has_busy_grave']
+
+    def get_has_busy_grave(self, obj):
+        return obj.grave_set.filter(is_busy=True).exists()
 
 class SectionSerializer(serializers.ModelSerializer):
     rows = RowSerializer(source='row_set', many=True, read_only=True)
@@ -50,9 +55,17 @@ class DceascedSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
     def get_location(self, obj):
-        return {
-            f'Tumba {obj.grave.num}, Fila {obj.grave.row.num}, Cuadro {obj.grave.row.section.num}, Manzana {obj.grave.row.section.block.num}'
-            }
+        grave = getattr(obj, 'grave', None)
+        row = getattr(grave, 'row', None) if grave else None
+        section = getattr(row, 'section', None) if row else None
+        block = getattr(section, 'block', None) if section else None
+
+        num = getattr(grave, 'num', '')
+        row_num = getattr(row, 'num', '')
+        section_num = getattr(section, 'num', '')
+        block_num = getattr(block, 'num', '')
+
+        return f'Tumba {num}, Fila {row_num}, Cuadro {section_num}, Manzana {block_num}'
         
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:

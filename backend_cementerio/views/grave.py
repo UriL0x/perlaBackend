@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets, status
 from django.http import HttpResponse
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import action
 
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -19,20 +20,21 @@ class GraveView(viewsets.ModelViewSet):
     serializer_class = GraveSerializer
     
     def create(self, request):
+        print(request.data)
         if len(request.data) == 0:
             return Response({"error": "Faltan campos obligatorios"}, status=status.HTTP_400_BAD_REQUEST)
 
         print(request.data)
         num_grave = request.data.get('num')
-        num_row = request.data.get('row')
+        id_row = request.data.get('row')
         
         # Validar tumba
-        grave = Grave.objects.filter(num=num_grave)
+        grave = Grave.objects.filter(num=num_grave).first()
         if grave:
             return Response({"error": "Ya existe una tumba con ese número"}, status=status.HTTP_400_BAD_REQUEST)
         
         # Guardar tumba
-        row = Row.objects.get(num=num_row)
+        row = Row.objects.get(id=id_row)
         grave = Grave()
         grave.num = num_grave
         grave.row = row
@@ -55,8 +57,14 @@ class GraveView(viewsets.ModelViewSet):
             grave.save()
             
         # Actuaslizar ubicacion
-        row = Row.objects.get(num=request.data.get('row'))
+        row = Row.objects.get(id=request.data.get('row'))
         grave.row = row        
         grave.save()
 
         return Response({"Tumba actualizada"}, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='available_graves')
+    def get_available_graves(self, request, *args, **kwargs):
+        available_graves = Grave.objects.filter(is_busy=False)
+        serializer = GraveSerializer(available_graves, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

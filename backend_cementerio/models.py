@@ -20,13 +20,12 @@ class Row(models.Model):
 class Grave(models.Model):
     row = models.ForeignKey(Row, on_delete=models.SET_NULL, null=True,blank=True)
     is_busy = models.BooleanField(default=False, blank=False)
-    num = models.IntegerField(blank=False)
+    num = models.IntegerField(blank=False, unique=True)
 
 class Dceasced(models.Model):
     name = models.CharField(max_length=255, blank=False)
     second_name = models.CharField(max_length=255, blank=False)
     date_of_death = models.DateField()
-    date_of_born = models.DateField()
     grave = models.ForeignKey(Grave, on_delete=models.SET_NULL, null=True, blank=True)
     
 class Document(models.Model):

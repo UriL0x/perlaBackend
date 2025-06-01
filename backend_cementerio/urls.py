@@ -6,6 +6,7 @@ from .views.users import UserView, login
 from .views.dceasced import DceascedView, DocumentView
 from .views.grave import GraveView
 from .views.locations import RowView, BlockView, SectionView
+from .views.reports import GeneralReportView
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -23,4 +24,5 @@ urlpatterns = [
     path('api/admin/register/', UserView.register),
     path('api/admin/login/', login),
     path('api/admin/ascend/', UserView.ascend),
+    path('api/reports/', GeneralReportView.get),
 ] 

@@ -17,6 +17,28 @@ from rest_framework.authentication import TokenAuthentication
 class BlockView(viewsets.ModelViewSet):
     queryset = Block.objects.all()
     serializer_class = BlockSerializer
+    
+    def create(self, request):
+        if len(request.data) == 0:
+            return Response({"error": "Faltan campos obligatorios"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        num = request.data.get('num')
+        
+        # Ver si ya existe una secion con ese numero
+        if Block.objects.filter(num=num).first():
+           return Response({"error": "Ya existe una manzana con ese numero"}, status=status.HTTP_400_BAD_REQUEST)       
+        
+        # Guardar Bloque
+        block = Block.objects.create(
+            num = num
+        )       
+
+        return Response({
+            "section": {
+                "id": block.id,
+                "num": block.num,
+            }
+        }, status=status.HTTP_201_CREATED)
 
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -25,6 +47,7 @@ class SectionView(viewsets.ModelViewSet):
     serializer_class = SectionSerializer
     
     def create(self, request):
+        print(request.data)
         if len(request.data) == 0:
             return Response({"error": "Faltan campos obligatorios"}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -44,9 +67,14 @@ class SectionView(viewsets.ModelViewSet):
             block = block
         )       
 
-        serializer = RowSerializer(section)
-        return Response({"section": serializer.data}, 
-                        status=status.HTTP_201_CREATED)
+        return Response({
+            "section": {
+                "id": section.id,
+                "num": section.num,
+                "block": section.block.id,
+            }
+        }, status=status.HTTP_201_CREATED)
+
         
     def update(self, request, *args, **kwargs):
         if len(request.data) == 0:

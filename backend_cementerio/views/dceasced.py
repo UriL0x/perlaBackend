@@ -60,7 +60,6 @@ class DceascedView(viewsets.ModelViewSet):
         name = request.data.get('name')
         second_name = request.data.get('second_name')
         date_of_death = request.data.get('date_of_death')
-        date_of_born = request.data.get('date_of_born')
         files = request.FILES.getlist('documents')
         grave_num= int(request.data.get('grave'))
    
@@ -81,7 +80,6 @@ class DceascedView(viewsets.ModelViewSet):
         dceasced.name = name
         dceasced.second_name = second_name
         dceasced.date_of_death = date_of_death
-        dceasced.date_of_born = date_of_born
         dceasced.grave = grave
         dceasced.save()
         
@@ -96,6 +94,7 @@ class DceascedView(viewsets.ModelViewSet):
         return Response({'Difuntos registrado'}, status=status.HTTP_201_CREATED)
     
     def update(self, request, *args, **kwargs):
+        print(request.data)
         param = kwargs.get('pk')
         try:
             dceasced = Dceasced.objects.get(id=param)
@@ -105,7 +104,6 @@ class DceascedView(viewsets.ModelViewSet):
         # Actualizar campos del difunto
         dceasced.name = request.data.get('name')
         dceasced.second_name = request.data.get('second_name')
-        dceasced.date_of_born = request.data.get('date_of_born')
         dceasced.date_of_death = request.data.get('date_of_death')
 
         # Obtener tumba actual y solicitada
